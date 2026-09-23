@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HGG Gym - Sistema Web para Computador</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* BARRA SUPERIOR (HEADER) */
+    .header {
+      background-color: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      background-color: #0284c7;
+      color: white;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .main-layout {
+      display: flex;
+      flex: 1;
+    }
+
+    /* MENÚ LATERAL (SIDEBAR) */
+    .sidebar {
+      width: 240px;
+      background-color: #0b0f19;
+      border-right: 1px solid #1e293b;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      padding: 12px 16px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .sidebar-btn:hover {
+      background-color: #1e293b;
+      color: #f8fafc;
+    }
+
+    .sidebar-btn.active {
+      background-color: #0284c7;
+      color: white;
+    }
+
+    /* ÁREA DE CONTENIDO */
+    .content-area {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .page-header {
+      margin-bottom: 25px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* COMPONENTES DE UI */
+    .card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .stat-box {
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      padding: 18px;
+      border-radius: 10px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-top: 6px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .input-field, .select-box {
+      width: 100%;
+      padding: 10px 14px;
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #f8fafc;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .input-field:focus, .select-box:focus {
+      border-color: #38bdf8;
+    }
+
+    .btn-primary {
+      padding: 10px 20px;
+      background-color: #0284c7;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover { opacity: 0.9; }
+
+    .btn-secondary {
+      padding: 10px 20px;
+      background-color: transparent;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* FORMULARIOS AUTENTICACIÓN CENTRADOS */
+    .auth-container {
+      max-width: 450px;
+      margin: 40px auto;
+    }
+
+    /* TABLA WEB */
+    .table-web {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .table-web th, .table-web td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #334155;
+      font-size: 14px;
+    }
+
+    .table-web th {
+      background-color: #0f172a;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .badge-success { background-color: rgba(34, 197, 94, 0.2); color: #4ade80; }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR (HEADER) -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-logo">HGG</div>
+      <span class="brand-title">Humongous Gym Gestor Web</span>
+    </div>
+    <div class="user-info" id="top-user-bar" style="display:none;">
+      <span>Usuario: <strong id="top-username" style="color:#f8fafc;">Carlos López</strong></span>
+      <button class="btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <div class="main-layout">
+
+    <!-- MENÚ LATERAL (SIDEBAR) -->
+    <aside class="sidebar" id="main-sidebar" style="display:none;">
+      <button class="sidebar-btn active" onclick="showPage('page-dashboard', this)">
+        <span>📊</span> Dashboard Principal
+      </button>
+      <button class="sidebar-btn" onclick="showPage('page-reserva', this)">
+        <span>📅</span> Agendar Citas
+      </button>
+      <button class="sidebar-btn" onclick="showPage('page-pagos', this)">
+        <span>💳</span> Planes y Pagos
+      </button>
+    </aside>
+
+    <!-- ÁREA DE CONTENIDO -->
+    <main class="content-area">
+
+      <!-- 1. LOGIN (AUTENTICACIÓN) -->
+      <div id="page-login" class="page active">
+        <div class="auth-container card">
+          <h2 class="page-title" style="font-size:20px; text-align:center;">Iniciar Sesión</h2>
+          <p class="page-subtitle" style="text-align:center; margin-bottom:20px;">Acceso al portal web de Humongous Gym [RF-18]</p>
+
+          <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label>Correo Electrónico:</label>
+              <input type="email" id="login-email" class="input-field" placeholder="usuario@ejemplo.com" required>
+            </div>
+            <div class="form-group">
+              <label>Contraseña:</label>
+              <input type="password" id="login-pass" class="input-field" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;">Ingresar al Sistema</button>
+          </form>
+
+          <button class="btn-secondary" style="width:100%; margin-top:12px; border:none; color:#38bdf8;" onclick="showAuthPage('page-register')">¿No tienes cuenta? Regístrate aquí [RF-01]</button>
+        </div>
+      </div>
+
+      <!-- 2. REGISTRO DE USUARIOS -->
+      <div id="page-register" class="page">
+        <div class="auth-container card">
+          <h2 class="page-title" style="font-size:20px; text-align:center;">Registro de Socio</h2>
+          <p class="page-subtitle" style="text-align:center; margin-bottom:20px;">Crea tu expediente en la plataforma [RF-01]</p>
+
+          <form onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label>Nombre Completo:</label>
+              <input type="text" id="reg-name" class="input-field" placeholder="Carlos López" required>
+            </div>
+            <div class="form-group">
+              <label>Documento de Identidad:</label>
+              <input type="number" class="input-field" placeholder="1020304050" required>
+            </div>
+            <div class="form-group">
+              <label>Correo Electrónico:</label>
+              <input type="email" class="input-field" placeholder="correo@ejemplo.com" required>
+            </div>
+            <div class="form-group">
+              <label>Plan Inicial [RF-04]:</label>
+              <select class="select-box">
+                <option>Plan Personalizado ($120.000 COP)</option>
+                <option>Plan Básico ($80.000 COP)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Contraseña:</label>
+              <input type="password" class="input-field" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;">Completar Registro</button>
+          </form>
+
+          <button class="btn-secondary" style="width:100%; margin-top:12px; border:none; color:#38bdf8;" onclick="showAuthPage('page-login')">Volver al Inicio de Sesión</button>
+        </div>
+      </div>
+
+      <!-- 3. DASHBOARD PRINCIPAL (ESCRITORIO) -->
+      <div id="page-dashboard" class="page">
+        <div class="page-header">
+          <h1 class="page-title">Tablero Principal de Administración y Servicios</h1>
+          <p class="page-subtitle">Métricas generales, estado de cuenta e ingreso al gimnasio</p>
+        </div>
+
+        <div class="grid-3" style="margin-bottom:20px;">
+          <div class="stat-box">
+            <span style="font-size:12px; color:#94a3b8;">Estado de Membresía</span>
+            <div class="stat-value" style="color:#4ade80; font-size:20px; margin-top:10px;">ACTIVA</div>
+            <span style="font-size:12px; color:#94a3b8;">Vence: 12/10/2026</span>
+          </div>
+          <div class="stat-box">
+            <span style="font-size:12px; color:#94a3b8;">Código de Acceso Virtual [RF-09]</span>
+            <div class="stat-value" style="font-size:18px; margin-top:10px; color:#38bdf8;">PIN: #8842-HGG</div>
+            <span style="font-size:12px; color:#94a3b8;">Válido para torniquete</span>
+          </div>
+          <div class="stat-box">
+            <span style="font-size:12px; color:#94a3b8;">Próxima Sesión</span>
+            <div class="stat-value" style="font-size:18px; margin-top:10px; color:#f8fafc;">Hoy 10:00 AM</div>
+            <span style="font-size:12px; color:#94a3b8;">Instructor: Gabriela Ortega</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size:16px; margin-bottom:15px;">Historial Reciente de Asistencias [RF-19]</h3>
+          <table class="table-web">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Servicio</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>09/09/2026</td>
+                <td>08:00 AM</td>
+                <td>Entrenamiento Personalizado</td>
+                <td><span class="badge badge-success">Ingreso Confirmado</span></td>
+              </tr>
+              <tr>
+                <td>07/09/2026</td>
+                <td>10:00 AM</td>
+                <td>Valoración Antropométrica</td>
+                <td><span class="badge badge-success">Ingreso Confirmado</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. AGENDAR CITAS (ESCRITORIO) -->
+      <div id="page-reserva" class="page">
+        <div class="page-header">
+          <h1 class="page-title">Agendamiento de Sesiones [RF-08]</h1>
+          <p class="page-subtitle">Reserva horarios con tu entrenador en la plataforma web</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="font-size:16px; margin-bottom:15px;">Formulario de Reserva</h3>
+            <div class="form-group">
+              <label>Seleccionar Entrenador:</label>
+              <select class="select-box">
+                <option>Gabriela Ortega (Entrenamiento Personalizado)</option>
+                <option>Jhorman Bonilla (Evaluación Física)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Seleccionar Fecha:</label>
+              <input type="date" class="input-field" value="2026-09-10">
+            </div>
+            <div class="form-group">
+              <label>Seleccionar Hora Disponible:</label>
+              <select class="select-box">
+                <option>08:00 AM - Disponible</option>
+                <option>10:00 AM - Disponible</option>
+                <option>04:00 PM - Disponible</option>
+              </select>
+            </div>
+            <button class="btn-primary" onclick="alert('Cita reservada correctamente desde la Web [RF-08]')">Confirmar Cita</button>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size:16px; margin-bottom:15px;">Resumen de Disponibilidad</h3>
+            <p style="font-size:13px; color:#94a3b8; line-height:1.6;">
+              Las citas reservadas pueden ser canceladas con hasta 2 horas de anticipación [RF-10]. Recibirás una notificación de confirmación al correo registrado.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. PAGOS Y PLANES (ESCRITORIO) -->
+      <div id="page-pagos" class="page">
+        <div class="page-header">
+          <h1 class="page-title">Módulo de Facturación y Planes [RF-05, RF-24]</h1>
+          <p class="page-subtitle">Gestión de mensualidades y descarga de comprobantes</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="font-size:16px; margin-bottom:15px;">Renovar Membresía</h3>
+            <div class="form-group">
+              <label>Plan a Adquirir:</label>
+              <select class="select-box">
+                <option>Plan Personalizado ($120.000 COP / mes)</option>
+                <option>Plan Básico ($80.000 COP / mes)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Método de Pago:</label>
+              <select class="select-box">
+                <option>Pasarela Web / Tarjeta de Crédito</option>
+                <option>PSE / Transferencia Bancaria</option>
+              </select>
+            </div>
+            <button class="btn-primary" onclick="alert('Pago en línea procesado correctamente [RF-05]')">Pagar Ahora ($120.000 COP)</button>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size:16px; margin-bottom:15px;">Facturas Emitidas [RF-24]</h3>
+            <table class="table-web">
+              <thead>
+                <tr>
+                  <th>N° Factura</th>
+                  <th>Fecha</th>
+                  <th>Monto</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>#FAC-102</td>
+                  <td>09/09/2026</td>
+                  <td>$120.000</td>
+                  <td><button class="btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="alert('Descargando factura en PDF...')">Descargar PDF</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // Navegación para pantallas de autenticación (Login / Registro)
+    function showAuthPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    // Iniciar Sesión (Simulación Web)
+    function handleLogin(e) {
+      e.preventDefault();
+      alert('Autenticación correcta en el portal Web [RF-18]');
+      document.getElementById('top-user-bar').style.display = 'flex';
+      document.getElementById('main-sidebar').style.display = 'flex';
+      showPage('page-dashboard', document.querySelector('.sidebar-btn'));
+    }
+
+    // Registrar Usuario (Simulación Web)
+    function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      if (name) {
+        document.getElementById('top-username').innerText = name;
+      }
+      alert('Registro completado en el sistema [RF-01]. Inicia sesión con tus datos.');
+      showAuthPage('page-login');
+    }
+
+    // Navegación entre secciones web (Dashboard, Reservas, Pagos)
+    function showPage(pageId, btnElement) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+      
+      document.getElementById(pageId).classList.add('active');
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
+    }
+
+    // Cerrar Sesión
+    function logout() {
+      document.getElementById('top-user-bar').style.display = 'none';
+      document.getElementById('main-sidebar').style.display = 'none';
+      showAuthPage('page-login');
+    }
+  </script>
+</body>
+</html>
